@@ -120,21 +120,5 @@ ENV JULIA_PROJECT ${REPO_DIR}
 # example installing APT packages.
 # If scripts required during build are present, copy them
 
-COPY src/requirements.txt ${REPO_DIR}/requirements.txt
-
-
-# Copy and chown stuff. This doubles the size of the repo, because
-# you can't actually copy as USER, only as root! Thanks, Docker!
-USER root
-COPY src/ ${REPO_DIR}
-RUN chown -R ${NB_USER}:${NB_USER} ${REPO_DIR}
-
-# Run assemble scripts! These will actually turn the specification
-# in the repository into an image.
-USER ${NB_USER}
-RUN ${KERNEL_PYTHON_PREFIX}/bin/pip install --no-cache-dir -r "requirements.txt"
-RUN ${KERNEL_PYTHON_PREFIX}/bin/pip install --no-cache-dir .
-RUN JULIA_PROJECT="" julia -e "using Pkg; Pkg.add(\"IJulia\"); using IJulia; installkernel(\"Julia\", \"--project=${REPO_DIR}\");" && \
-julia --project=${REPO_DIR} -e 'using Pkg; Pkg.instantiate(); pkg"precompile"'
 
 
