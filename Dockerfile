@@ -138,23 +138,3 @@ RUN JULIA_PROJECT="" julia -e "using Pkg; Pkg.add(\"IJulia\"); using IJulia; ins
 julia --project=${REPO_DIR} -e 'using Pkg; Pkg.instantiate(); pkg"precompile"'
 
 
-
-# Container image Labels!
-# Put these at the end, since we don't want to rebuild everything
-# when these change! Did I mention I hate Dockerfile cache semantics?
-
-LABEL repo2docker.ref="static-to-live-1"
-LABEL repo2docker.repo="https://github.com/fonsp/pluto-on-binder"
-LABEL repo2docker.version="0.11.0"
-
-# We always want containers to run as non-root
-USER ${NB_USER}
-
-# Add start script
-# Add entrypoint
-COPY /repo2docker-entrypoint /usr/local/bin/repo2docker-entrypoint
-ENTRYPOINT ["/usr/local/bin/repo2docker-entrypoint"]
-
-# Specify the default command to run
-CMD ["jupyter", "notebook", "--ip", "0.0.0.0"]
-
